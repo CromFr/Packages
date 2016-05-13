@@ -1,5 +1,6 @@
 {
 	"cmd": ["dmd", "$file"],
 	"file_regex": "^(.*?)\\(([0-9]+)\\)",
+	"syntax": "D-dmd-build.sublime-syntax",
 	"selector": "source.d"
 }
