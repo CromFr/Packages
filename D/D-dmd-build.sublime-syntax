@@ -1,0 +1,62 @@
+%YAML 1.2
+---
+scope: build.d.dmd
+hidden: true
+contexts:
+  main:
+    # Assertion / exception
+    - match: '^(.*)@(.*?)(-mixin-(\d+))?\((\d+(,\d+)?)\):\s+'
+      captures:
+        1: keyword.control
+        2: entity.name.filename
+        3: keyword.control
+        4: constant.numeric
+        5: constant.numeric
+      push: stack_trace
+
+    # Build messages
+    - match: '^(.*?)(-mixin-(\d+))?\((\d+(,\d+)?)\)'
+      captures:
+        1: entity.name.filename
+        2: keyword.control
+        3: constant.numeric
+        4: constant.numeric
+      push: build_msg
+
+  build_msg:
+    - match: '(Error):.*?$'
+      captures:
+        1: invalid.error
+
+    - match: '(Warning):.*?$'
+      captures:
+        1: invalid.warning
+
+    - match: '(Deprecated):.*?$'
+      captures:
+        1: invalid.deprecated
+
+    - match: '$'
+      pop: true
+
+  stack_trace:
+    - match: '^(.+):(\d+|\?)\s+'
+      captures:
+        1: entity.name.filename
+        2: constant.numeric
+      push: stack_trace_function
+
+    - match: '^---+$'
+      scope: comment
+
+    - match: '(?!(.+):(\d+|\?))^'
+      pop: true
+
+  stack_trace_function:
+    - match: '(.*?\s)?(.*?)(\(.*\))?\s+(\[0x[\da-f]+\])$'
+      captures:
+        1: comment
+        2: support.function
+        3: comment
+        4: comment
+      pop: true
